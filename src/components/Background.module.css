@@ -1,0 +1,23 @@
+/* src/components/Background.module.css */
+.background {
+    background-image: url('../assets/fondo.jpg'); /* Ruta de la imagen */
+    background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* Fija el fondo para que no se desplace */
+    min-height: 100vh; /* Altura mínima del contenedor (100% del viewport) */
+    width: 100%; /* Ancho del contenedor */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Espacio interno para evitar que el contenido toque los bordes */
+  }
+  
+  .content {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+    padding: 20px; /* Espacio interno */
+    border-radius: 8px; /* Bordes redondeados */
+    max-width: 1200px; /* Ancho máximo del contenido */
+    width: 100%; /* Ancho del contenido */
+    margin: 20px; /* Margen exterior */
+  }

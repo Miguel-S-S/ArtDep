@@ -1,0 +1,19 @@
+/* src/pages/Products.module.css */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .slick-slide {
+    padding: 0 10px; /* Espacio entre los productos */
+  }
+  
+  .slick-prev:before,
+  .slick-next:before {
+    color: black; /* Color de las flechas de navegación */
+  }
+  
+  .slick-dots li button:before {
+    color: black; /* Color de los puntos de navegación */
+  }
