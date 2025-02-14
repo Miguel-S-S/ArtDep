@@ -6,7 +6,7 @@ function App() {
   return (
     <div>
       <Header /> 
-      <p>Bienvenido a mi tienda online.</p>
+      <p>Bienvenido.</p>
     </div>
   );
 }
