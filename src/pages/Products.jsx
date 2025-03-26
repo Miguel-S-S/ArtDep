@@ -1,61 +1,143 @@
- //src/pages/Products.jsx
-//import React from 'react';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import ProductCard from '../components/ProductCard';
-import Product from '../models/Product';
-import imagen1 from '../assets/imagen1 (1).jpeg';
-import imagen2 from '../assets/imagen1 (2).jpeg';
-import imagen3 from '../assets/imagen1 (3).jpeg';
-import imagen4 from '../assets/imagen1 (9).jpg';
-import imagen5 from '../assets/imagen1 (10).jpg';
-import imagen6 from '../assets/imagen1 (11).jpg';
-
-
-const products = [
-  new Product(1, 'Chaleco 15 Kgs', '$3500', imagen1),
-  new Product(2,'Chaleco 10 Kgs', '$2000', imagen2), 
-  new Product(3,'Tobilleras pesos varios','$852r', imagen3),
-  new Product(4, 'Corebag', '$1000', imagen4),
-  new Product(5,'Corebag', '$20100', imagen5), 
-  new Product(6,'Bandas para algo','$3500', imagen6),
-];
+// eslint-disable-next-line no-unused-vars
+import React, { useEffect, useState } from "react";
+import { db } from "../firebaseConfig";
+import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import ProductCard from "../components/ProductCard";
+//import Product from "../models/Product"; // Corrige la importación del modelo de Producto
 
 export default function Products() {
-  //configurar el carrusel
+  const [products, setProducts] = useState([]); // Estado para almacenar los productos
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "", 
+    price: "",
+    image: "",
+  }); //estado del nuevo producto
+
+  // Función para obtener productos de Firestore
+  const fetchProducts = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products")); // Asegúrate de que la colección existe
+      const fetchedProducts = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(fetchedProducts); // Actualiza el estado con los productos obtenidos
+    } catch (error) {
+      console.error("Error al obtener productos:", error);
+    }
+  };
+
+  // Cargar productos cuando el componente se monte
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleInputChange = (e) => {
+    setNewProduct({ ...newProduct, [e.target.name]: e.target.value});
+  };
+
+    // Eliminar un producto de Firebase
+    const deleteProduct = async (id) => {
+      const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar este producto?");
+      if (!confirmDelete) return;
+  
+      try {
+        await deleteDoc(doc(db, "products", id));
+        console.log("Producto eliminado:", id);
+        fetchProducts(); // Recargar productos
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+      }
+    };
+
+  // Función para agregar un producto a Firestore
+  const addProduct = async () => {
+    if (!newProduct.name || !newProduct.price || !newProduct.image){
+      alert("complete la informacion del producto");
+      return
+    }
+
+    try {
+      const docRef = await addDoc(collection(db, "products"), newProduct);
+      console.log("producto agregado exitosamente con el id:", docRef.id);      
+      setNewProduct({ name: "", description: "", price: "", image: ""}); // limpiar
+      fetchProducts(); // Recargar los productos después de agregar uno nuevo
+    } catch (error) {
+      console.error("Error al agregar el producto:", error);
+    }
+  };
+
+  // Configuración del carrusel
   const settings = {
-    dots: true, // muestra los puntos de navegacion
-    infinite: true, // permite un desplazamiento infinito
-    speed: 500, // velocidad de transicion (en ms)
-    slidesToShow: 3, //numero de productos visibles a la vez
-    slidesToScroll: 1, // numero de productos visibles a la vez
-    responsive:[
-      {
-      breakpoint: 1024,
-      settings:{
-        slidesToShow: 2,
-        slidesToScroll: 1, 
-      },
-    },
-    {
-      breakpoint: 600,
-      settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+      { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+      { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1 } },
     ],
   };
+
   return (
     <div>
       <h1>Productos</h1>
+       {/* Formulario para agregar productos */}
+       <div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Nombre del producto"
+          value={newProduct.name}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="description"
+          placeholder="Descripción"
+          value={newProduct.description}
+          onChange={handleInputChange}
+        />
+        <input
+          type="number"
+          name="price"
+          placeholder="Precio"
+          value={newProduct.price}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="image"
+          placeholder="URL de la imagen"
+          value={newProduct.image}
+          onChange={handleInputChange}
+        />
+        <button onClick={addProduct}>Agregar Producto</button>
+      </div>
       <Slider {...settings}>
         {products.map((product) => (
-          <div key={product.id} >
-            <ProductCard product={product} />
-          </div>
-        ))}
+          <div key={product.id} style={{ position: "relative", textAlign: "center" }}>
+          <ProductCard product={product} />
+          <button
+            onClick={() => deleteProduct(product.id)}
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              border: "none",
+              padding: "5px 10px",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
+          >
+            Eliminar
+          </button>
+        </div>
+      ))}
       </Slider>
     </div>
   );

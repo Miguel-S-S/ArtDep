@@ -10,14 +10,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px; /* Espacio interno para evitar que el contenido toque los bordes */
+    padding: 0px; /* Espacio interno para evitar que el contenido toque los bordes */
   }
   
   .content {
-    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
-    padding: 20px; /* Espacio interno */
+    background-color: rgba(239, 243, 246, 0.8); /* Fondo blanco semitransparente */
+    padding: 10px; /* Espacio interno */
     border-radius: 8px; /* Bordes redondeados */
-    max-width: 1200px; /* Ancho máximo del contenido */
+    max-width: 1000px; /* Ancho máximo del contenido */
     width: 100%; /* Ancho del contenido */
     margin: 20px; /* Margen exterior */
   }
